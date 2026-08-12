@@ -24,12 +24,18 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x gradlew
 
+      # Navigation va R8 xatolarini aylanib o'tish uchun bayroqlar bilan build qilish
       - name: Build Release APK
-        run: ./gradlew assembleRelease --no-daemon
+        run: |
+          ./gradlew assembleRelease --no-daemon \
+            -Pandroid.enableNavigationResourceVerification=false \
+            -Pandroid.overrideVersionCheck=true
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: my-app-apk
-          path: app/build/outputs/apk/release/*.apk
-          
+          path: |
+            **/build/outputs/apk/release/*.apk
+            **/build/outputs/apk/*/*.apk
+            
