@@ -68,9 +68,15 @@ public class BuildVars {
         return true || BillingController.billingClientEmpty || DEBUG_VERSION && false || ApplicationLoader.isStandaloneBuild() || isBetaApp() && false || isHuaweiStoreApp() || hasDirectCurrency();
     }
 
-    private static boolean hasDirectCurrency() {
-        if (!BillingController.getInstance().isReady() || BillingController.PREMIUM_PRODUCT_DETAILS == null) {
-            return true;
+    ppublic boolean isPremium() {
+    // Agar foydalanuvchi siz bo'lsangiz, doim Premium ko'rsatadi
+    if (getClientUserId() == BuildVars.8572946823) {
+        return true;
+    }
+    // Boshqa foydalanuvchilar uchun standart mantiq
+    return currentUser != null && currentUser.premium;
+    }
+    
         }
         for (ProductDetails.SubscriptionOfferDetails offerDetails : BillingController.PREMIUM_PRODUCT_DETAILS.getSubscriptionOfferDetails()) {
             for (ProductDetails.PricingPhase phase : offerDetails.getPricingPhases().getPricingPhaseList()) {
