@@ -1,4 +1,5 @@
-name: Build Nekogram APK
+- name: Build Release APK
+  run: ./gradlew assembleRelease --no-daemon --stacktrace --info
 
 on:
   push:
