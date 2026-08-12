@@ -1,4 +1,4 @@
-66/*
+/*
  * This is the source code of Telegram for Android v. 7.x.x.
  * It is licensed under GNU GPL v. 2 or later.
  * You should have received a copy of the license in this archive (see LICENSE).
@@ -31,31 +31,45 @@ public class BuildVars {
     public static int APP_ID = 37349381;
     public static String APP_HASH = "b98c62f5d7f406bea15614613e4a3e41";
 
-    // SafetyNet key for Google Identity SDK, set it to empty to disable
     public static String SAFETYNET_KEY = "";
-    public static String PLAYSTORE_APP_URL = "https://play.google.com/store/apps/details?id=org.telegram.messenger";
-    public static String HUAWEI_STORE_URL = "https://appgallery.huawei.com/app/C101184875";
-    public static String GOOGLE_AUTH_CLIENT_ID = "760348033671-81kmi3pi84p11ub8hp9a1funsv0rn2p9.apps.googleusercontent.com";
+    public static String PLAYSTORE_APP_URL =
+            "https://play.google.com/store/apps/details?id=org.telegram.messenger";
+    public static String HUAWEI_STORE_URL =
+            "https://appgallery.huawei.com/app/C101184875";
+    public static String GOOGLE_AUTH_CLIENT_ID =
+            "760348033671-81kmi3pi84p11ub8hp9a1funsv0rn2p9.apps.googleusercontent.com";
 
     public static String HUAWEI_APP_ID = "101184875";
 
-    // You can use this flag to disable Google Play Billing (If you're making fork and want it to be in Google Play)
     public static boolean IS_BILLING_UNAVAILABLE = !Extra.isDirectApp();
 
-    // works only on official app ids, disable on your forks
     public static boolean SUPPORTS_PASSKEYS = false;
+
+    // LOCAL DEMO ONLY
+    public static final boolean DEMO_PREMIUM = true;
+    public static final long DEMO_STARS = 9_000_000_000_000L;
 
     static {
         APP_ID = Extra.APP_ID;
         APP_HASH = Extra.APP_HASH;
         PLAYSTORE_APP_URL = "https://nekogram.app/download";
+
         if (ApplicationLoader.applicationContext != null) {
-            SharedPreferences sharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("systemConfig", Context.MODE_PRIVATE);
-            LOGS_ENABLED = DEBUG_VERSION || sharedPreferences.getBoolean("logsEnabled", DEBUG_VERSION);
+            SharedPreferences sharedPreferences =
+                    ApplicationLoader.applicationContext.getSharedPreferences(
+                            "systemConfig", Context.MODE_PRIVATE);
+
+            LOGS_ENABLED =
+                    DEBUG_VERSION ||
+                    sharedPreferences.getBoolean("logsEnabled", DEBUG_VERSION);
+
             if (LOGS_ENABLED) {
-                final Thread.UncaughtExceptionHandler pastHandler = Thread.getDefaultUncaughtExceptionHandler();
+                final Thread.UncaughtExceptionHandler pastHandler =
+                        Thread.getDefaultUncaughtExceptionHandler();
+
                 Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
                     FileLog.fatal(exception, false);
+
                     if (pastHandler != null) {
                         pastHandler.uncaughtException(thread, exception);
                     }
@@ -65,46 +79,61 @@ public class BuildVars {
     }
 
     public static boolean useInvoiceBilling() {
-        return true || BillingController.billingClientEmpty || DEBUG_VERSION && false || ApplicationLoader.isStandaloneBuild() || isBetaApp() && false || isHuaweiStoreApp() || hasDirectCurrency();
+        return true
+                || BillingController.billingClientEmpty
+                || DEBUG_VERSION && false
+                || ApplicationLoader.isStandaloneBuild()
+                || isBetaApp() && false
+                || isHuaweiStoreApp()
+                || hasDirectCurrency();
     }
 
-    ppublic boolean isPremium() {
-    // Agar foydalanuvchi siz bo'lsangiz, doim Premium ko'rsatadi
-    if (getClientUserId() == BuildVars.8572946823) {
-        return true;
-    }
-    // Boshqa foydalanuvchilar uchun standart mantiq
-    return currentUser != null && currentUser.premium;
-    }
-    
+    public static boolean hasDirectCurrency() {
+        if (BillingController.PREMIUM_PRODUCT_DETAILS == null) {
+            return false;
         }
-        for (ProductDetails.SubscriptionOfferDetails offerDetails : BillingController.PREMIUM_PRODUCT_DETAILS.getSubscriptionOfferDetails()) {
-            for (ProductDetails.PricingPhase phase : offerDetails.getPricingPhases().getPricingPhaseList()) {
-                for (String cur : MessagesController.getInstance(UserConfig.selectedAccount).directPaymentsCurrency) {
-                    if (Objects.equals(phase.getPriceCurrencyCode(), cur)) {
+
+        if (BillingController.PREMIUM_PRODUCT_DETAILS
+                .getSubscriptionOfferDetails() == null) {
+            return false;
+        }
+
+        for (ProductDetails.SubscriptionOfferDetails offerDetails :
+                BillingController.PREMIUM_PRODUCT_DETAILS
+                        .getSubscriptionOfferDetails()) {
+
+            for (ProductDetails.PricingPhase phase :
+                    offerDetails.getPricingPhases().getPricingPhaseList()) {
+
+                for (String cur :
+                        MessagesController.getInstance(
+                                UserConfig.selectedAccount)
+                                .directPaymentsCurrency) {
+
+                    if (Objects.equals(
+                            phase.getPriceCurrencyCode(), cur)) {
                         return true;
                     }
                 }
             }
         }
+
         return false;
     }
 
     private static Boolean betaApp;
+
     public static boolean isBetaApp() {
         return BuildConfig.DEBUG;
-        /*if (betaApp == null) {
-            betaApp = ApplicationLoader.applicationContext != null && "org.telegram.messenger.beta".equals(ApplicationLoader.applicationContext.getPackageName());
-        }
-        return betaApp;*/
     }
-
 
     public static boolean isHuaweiStoreApp() {
         return ApplicationLoader.isHuaweiStoreBuild();
     }
 
     public static String getSmsHash() {
-        return ApplicationLoader.isStandaloneBuild() ? "w0lkcmTZkKh" : (DEBUG_VERSION ? "O2P2z+/jBpJ" : "oLeq9AcOZkT");
+        return ApplicationLoader.isStandaloneBuild()
+                ? "w0lkcmTZkKh"
+                : (DEBUG_VERSION ? "O2P2z+/jBpJ" : "oLeq9AcOZkT");
     }
-}
+                 }
