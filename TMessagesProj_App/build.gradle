@@ -57,11 +57,13 @@ android {
             minifyEnabled true
             shrinkResources true
             vcsInfo.include false
+
             if (localProperties.getProperty("storeFile") != null) {
                 signingConfig signingConfigs.sign
             } else {
                 signingConfig signingConfigs.debug
             }
+
             proguardFiles '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel 'FULL'
         }
@@ -74,7 +76,10 @@ android {
 
         multiDexEnabled true
 
-        manifestPlaceholders = [MAPS_API_KEY: localProperties.get("mapsApiKey")]
+        // Fixed: prevents null MAPS_API_KEY
+        manifestPlaceholders = [
+            MAPS_API_KEY: localProperties.getProperty("mapsApiKey", "")
+        ]
     }
 
     bundle {
@@ -91,6 +96,7 @@ android {
         reset()
         include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
     }
+
     namespace 'org.telegram.messenger.regular'
 
     dependenciesInfo {
@@ -102,10 +108,17 @@ android {
 androidComponents {
     onVariants(selector().all()) { variant ->
         variant.outputs.each { output ->
-            def abi = output.filters.find { it.filterType == FilterConfiguration.FilterType.ABI }?.identifier
+            def abi = output.filters.find {
+                it.filterType == FilterConfiguration.FilterType.ABI
+            }?.identifier
+
             def abiName = abi ?: "universal"
             def baseVersionCode = output.versionCode.get()
-            output.outputFileName.set("Nekogram-${output.versionName.get()}-${baseVersionCode}-${abiName}.apk")
+
+            output.outputFileName.set(
+                "Nekogram-${output.versionName.get()}-${baseVersionCode}-${abiName}.apk"
+            )
+
             output.versionCode.set(baseVersionCode * 10)
         }
     }
