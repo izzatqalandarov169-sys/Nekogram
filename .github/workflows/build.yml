@@ -1,4 +1,4 @@
-Name: Build Nekogram APK
+name: Build Nekogram APK
 
 on:
   push:
@@ -20,22 +20,16 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: 'gradle'
-
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
 
     - name: Make gradlew executable
       run: chmod +x gradlew
 
-    - name: Build Arm64 APK (Fast Build)
-      run: ./gradlew assembleAfatDebug -PabiFilters=arm64-v8a --stacktrace --no-daemon
+    - name: Build Arm64 APK
+      run: ./gradlew assembleDebug -PabiFilters=arm64-v8a --stacktrace
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: Nekogram-APK
-        path: |
-          app/build/outputs/apk/**/*.apk
-          **/build/outputs/apk/**/*.apk
-          
+        path: TMessagesProj/build/outputs/apk/**/*.apk
+        
