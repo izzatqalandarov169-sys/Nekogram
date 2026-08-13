@@ -21,11 +21,21 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Setup Gradle Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
     - name: Make gradlew executable
       run: chmod +x gradlew
 
     - name: Build Arm64 APK
-      run: ./gradlew assembleDebug -PabiFilters=arm64-v8a --stacktrace
+      run: ./gradlew assembleDebug -PabiFilters=arm64-v8a -x externalNativeBuild --stacktrace
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
